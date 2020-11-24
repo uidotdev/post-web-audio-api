@@ -41,9 +41,35 @@ snareButton.innerText = "Snare";
 snareButton.addEventListener("click", () => {
   const whiteNoiseSource = audioContext.createBufferSource();
   whiteNoiseSource.buffer = whiteNoiseBuffer;
-  whiteNoiseSource.connect(snareFilter);
 
+  // Control the gain of our snare white noise
+  const whiteNoiseGain = audioContext.createGain();
+  whiteNoiseGain.gain.setValueAtTime(1, audioContext.currentTime);
+  whiteNoiseGain.gain.exponentialRampToValueAtTime(
+    0.01,
+    audioContext.currentTime + 0.2
+  );
+  whiteNoiseSource.connect(whiteNoiseGain);
+  whiteNoiseGain.connect(snareFilter);
   whiteNoiseSource.start();
+  whiteNoiseSource.stop(audioContext.currentTime + 0.2);
+
+  // Set up an oscillator to provide a 'snap' sound
+  const snareOscillator = audioContext.createOscillator();
+  snareOscillator.type = "triangle";
+  snareOscillator.frequency.setValueAtTime(100, audioContext.currentTime);
+
+  // Control the gain of our snare oscillator
+  const oscillatorGain = audioContext.createGain();
+  oscillatorGain.gain.setValueAtTime(0.7, audioContext.currentTime);
+  oscillatorGain.gain.exponentialRampToValueAtTime(
+    0.01,
+    audioContext.currentTime + 0.1
+  );
+  snareOscillator.connect(oscillatorGain);
+  oscillatorGain.connect(primaryGainControl);
+  snareOscillator.start();
+  snareOscillator.stop(audioContext.currentTime + 0.2);
 });
 document.body.appendChild(snareButton);
 
