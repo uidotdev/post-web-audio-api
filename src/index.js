@@ -116,3 +116,38 @@ hihatButton.addEventListener("click", async () => {
   hihatSource.start();
 });
 document.body.appendChild(hihatButton);
+
+document.body.appendChild(document.createElement("br"));
+const notes = [
+  { name: "C", frequency: 261.63 },
+  { name: "C#", frequency: 277.18 },
+  { name: "D", frequency: 293.66 },
+  { name: "D#", frequency: 311.13 },
+  { name: "E", frequency: 329.63 },
+  { name: "F", frequency: 349.23 },
+  { name: "F#", frequency: 369.99 },
+  { name: "G", frequency: 392.0 },
+  { name: "G#", frequency: 415.3 },
+  { name: "A", frequency: 440.0 },
+  { name: "A#", frequency: 466.16 },
+  { name: "B", frequency: 493.88 },
+  { name: "C", frequency: 523.25 },
+];
+
+notes.forEach(({ name, frequency }) => {
+  const noteButton = document.createElement("button");
+  noteButton.innerText = name;
+  noteButton.addEventListener("click", () => {
+    // Create an oscillator at the note's frequency
+    const noteOscillator = audioContext.createOscillator();
+    noteOscillator.type = "square";
+    noteOscillator.frequency.setValueAtTime(
+      frequency,
+      audioContext.currentTime
+    );
+    noteOscillator.connect(primaryGainControl);
+    noteOscillator.start();
+    noteOscillator.stop(audioContext.currentTime + 1);
+  });
+  document.body.appendChild(noteButton);
+});
