@@ -99,3 +99,20 @@ kickButton.addEventListener("click", () => {
   kickOscillator.stop(audioContext.currentTime + 0.5);
 });
 document.body.appendChild(kickButton);
+
+const hihatButton = document.createElement("button");
+hihatButton.innerText = "Hi-hat";
+hihatButton.addEventListener("click", async () => {
+  const response = await fetch(
+    "https://unpkg.com/@teropa/drumkit@1.1.0/src/assets/hatOpen2.mp3"
+  );
+  const soundBuffer = await response.arrayBuffer();
+  const hihatBuffer = await audioContext.decodeAudioData(soundBuffer);
+
+  const hihatSource = audioContext.createBufferSource();
+  hihatSource.buffer = hihatBuffer;
+
+  hihatSource.connect(primaryGainControl);
+  hihatSource.start();
+});
+document.body.appendChild(hihatButton);
