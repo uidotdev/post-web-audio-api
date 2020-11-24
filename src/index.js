@@ -46,3 +46,30 @@ snareButton.addEventListener("click", () => {
   whiteNoiseSource.start();
 });
 document.body.appendChild(snareButton);
+
+// Kick Drum Button
+const kickButton = document.createElement("button");
+kickButton.innerText = "Kick";
+kickButton.addEventListener("click", () => {
+  const kickOscillator = audioContext.createOscillator();
+  // Frequency in Hz. This corresponds to a C note.
+  kickOscillator.frequency.setValueAtTime(150, audioContext.currentTime);
+  kickOscillator.frequency.exponentialRampToValueAtTime(
+    0.001,
+    audioContext.currentTime + 0.5
+  );
+
+  const kickGain = audioContext.createGain();
+  kickGain.gain.setValueAtTime(1, 0);
+  kickGain.gain.exponentialRampToValueAtTime(
+    0.001,
+    audioContext.currentTime + 0.5
+  );
+  kickOscillator.connect(kickGain);
+  kickGain.connect(primaryGainControl);
+
+  kickOscillator.start();
+  // This will stop the oscillator after half a second.
+  kickOscillator.stop(audioContext.currentTime + 0.5);
+});
+document.body.appendChild(kickButton);
