@@ -139,15 +139,30 @@ notes.forEach(({ name, frequency }) => {
   noteButton.innerText = name;
   noteButton.addEventListener("click", () => {
     // Create an oscillator at the note's frequency
+    const now = audioContext.currentTime;
     const noteOscillator = audioContext.createOscillator();
     noteOscillator.type = "square";
-    noteOscillator.frequency.setValueAtTime(
-      frequency,
-      audioContext.currentTime
+    noteOscillator.frequency.setValueAtTime(frequency, now);
+
+    const attackTime = 0.2;
+    const decayTime = 0.3;
+    const sustainLevel = 0.7;
+    const releaseTime = 0.2;
+    const duration = 1;
+    const noteGain = audioContext.createGain();
+    noteGain.gain.setValueAtTime(0, 0);
+    noteGain.gain.linearRampToValueAtTime(1, now + attackTime);
+    noteGain.gain.linearRampToValueAtTime(
+      sustainLevel,
+      now + attackTime + decayTime
     );
-    noteOscillator.connect(primaryGainControl);
+    noteGain.gain.setValueAtTime(sustainLevel, now + duration - releaseTime);
+    noteGain.gain.linearRampToValueAtTime(0, now + duration);
+
     noteOscillator.start();
-    noteOscillator.stop(audioContext.currentTime + 1);
+    noteOscillator.stop(now + 1);
+    noteOscillator.connect(noteGain);
+    noteGain.connect(primaryGainControl);
   });
   document.body.appendChild(noteButton);
 });
