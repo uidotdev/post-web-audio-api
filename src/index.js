@@ -144,6 +144,14 @@ notes.forEach(({ name, frequency }) => {
     noteOscillator.type = "square";
     noteOscillator.frequency.setValueAtTime(frequency, now);
 
+    const vibrato = audioContext.createOscillator();
+    vibrato.frequency.value = 10; // 10 Hz
+    const vibratoGain = audioContext.createGain();
+    vibratoGain.gain.value = 1.5;
+    vibrato.connect(vibratoGain);
+    vibratoGain.connect(noteOscillator.frequency);
+    vibrato.start();
+
     const attackTime = 0.2;
     const decayTime = 0.3;
     const sustainLevel = 0.7;
